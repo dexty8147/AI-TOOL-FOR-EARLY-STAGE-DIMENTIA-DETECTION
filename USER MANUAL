@@ -1,0 +1,134 @@
+NeuroScreen AI | User & Clinical Manual
+System Version: 3.0.4 (2026 Build)
+1. PRODUCT OVERVIEW
+NeuroScreen is a state-of-the-art AI-driven clinical diagnostic tool designed for the early-stage detection of dementia and related cognitive impairments. By combining traditional neurological assessment frameworks with neural analysis and multi-language Speech-to-Text (STT) and Text-to-Speech (TTS) technology, NeuroScreen provides immediate risk profiling for clinical environments.
+
+2. GETTING STARTED
+2.1 Hardware Requirements
+Audio Input: High-fidelity microphone for voice recognition.
+
+Audio Output: Speakers or headphones for automated question narration.
+
+Display: Minimum resolution of 1024x768 for clinical reports.
+
+Connectivity: Stable internet connection for Tailwind and FontAwesome CDN assets.
+
+2.2 Launching the Application
+Open the index.html file in any modern web browser (Chrome, Edge, or Safari).
+
+The Hero Section will initialize. This is the "Stable UI" zone where you can view the primary call-to-action.
+
+3. CORE FUNCTIONALITIES
+3.1 Language Personalization
+NeuroScreen supports five primary clinical languages. This is managed via the Language Selector in the navigation bar.
+
+English: Default (en-US)
+
+Hindi: (hi-IN)
+
+French: (fr-FR)
+
+Spanish: (es-ES)
+
+German: (de-DE)
+
+Note: Changing the language updates the UI text, the diagnostic question set, and the AI Voice Narration accent.
+
+3.2 Patient Registration
+Before an assessment begins, clinical staff must enter patient metadata:
+
+Full Name and Age.
+
+Contact details (Email/Phone).
+
+Medical History (Diabetes, Hypertension, Family History).
+This data is stored in the local session for report generation.
+
+3.3 The Diagnostic Flow (15 Steps)
+The assessment is divided into three distinct neurological phases:
+
+Phase 1: Orientation (Questions 1–5)
+
+Tests the patient's awareness of time and place.
+
+AI speaks the question; the patient answers via text or voice.
+
+Phase 2: Word Memory (Questions 6–10)
+
+A randomized set of 5 words is presented and read aloud.
+
+The patient must memorize them during a "Cooldown" phase.
+
+The patient is later asked to recall these words.
+
+Phase 3: Numerical Recall (Questions 11–15)
+
+Tests short-term working memory and concentration.
+
+Uses randomized 2-digit number sequences.
+
+4. ASSISTIVE TECHNOLOGY
+4.1 AI Voice Narration (TTS)
+The system automatically reads out every question. This ensures accessibility for patients with visual impairments or literacy challenges. The voice will automatically match the selected language's native accent.
+
+4.2 Voice Input (STT)
+Click the Microphone Icon in the input field to enable Speech-to-Text. The patient can speak their answer, which the AI will transcribe into the text field for processing.
+
+5. CLINICAL ADMINISTRATION
+5.1 Staff Login
+To access sensitive patient records:
+
+Click Clinical Login.
+
+Enter default credentials:
+
+Username: admin
+
+Password: admin123
+
+5.2 Record Management
+The Staff Dashboard allows you to:
+
+View all past patient scores.
+
+Filter by risk level (Healthy vs. High Risk).
+
+Re-generate and print full PDF reports.
+
+6. REPORT INTERPRETATION
+6.1 Scoring Logic
+Healthy Range (65–100): Suggests cognitive functions are within normal limits.
+
+High Risk (<65): Indicates significant markers of cognitive decline. Immediate referral to a neurologist is recommended.
+
+6.2 Treatment Suggestions
+The AI generates localized recommendations:
+
+Healthy: Cognitive wellness plans, puzzles, and diet tips.
+
+High Risk: Contact info for Senior Neurologists, MRI/CT scheduling, and support groups.
+
+7. MAINTENANCE & SECURITY
+7.1 Data Storage
+This version uses LocalStorage. Patient data is stored on the physical machine. To clear data, use the "Logout" button or clear browser cache.
+
+7.2 Code Integrity
+Ensure the dict object in the script tag is not modified, as it contains the critical translation mapping for the 15-step diagnostic process.
+
+8. PROJECT TEAM & ATTRIBUTION
+Project: AI Tool for Early Stage Dementia Detection
+Team: CSE 176
+
+Piruthivi Raj Saravanan (20221CSE0268)
+
+Vanka Revanth Adithya (20221CSE0260)
+
+Rafael V (20221CSE0270)
+
+University: Presidency University
+Contact: [Department of Computer Science Engineering]
+
+9. DISCLAIMER
+NeuroScreen is an AI assistance tool. It provides a risk profile based on behavioral responses. It is NOT a replacement for a professional medical diagnosis. All reports must be verified by a certified Medical Professional.
+
+[End of Manual]
