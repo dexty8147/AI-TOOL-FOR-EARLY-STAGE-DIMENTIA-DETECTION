@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroScreen | AI Clinical Diagnostics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body { font-family: 'Plus Jakarta Sans', sans-serif; scroll-behavior: smooth; }
+        .hidden { display: none !important; }
+        
+        .hero-section {
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.9) 0%, rgba(30, 41, 59, 0.8) 100%),
+                        url('https://images.unsplash.com/photo-1559757175-5700dde675bc?q=80&w=2000&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+        }
+
+        .report-paper {
+            background: white;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            padding: 50px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .q-card {
+            background: #ffffff;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.03);
+            border-radius: 3rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .input-glow {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .input-glow:focus {
+            background: white;
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1);
+            border-color: #2563eb;
+        }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { background: white; }
+            .report-paper { box-shadow: none; border: none; padding: 0; margin: 0; width: 100%; }
+        }
+
+        .loader-ring {
+            border: 4px solid #f1f5f9;
+            border-top: 4px solid #2563eb;
+            border-radius: 50%;
+            width: 50px; height: 50px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .recommendation-pill {
+            background: #f8fafc;
+            border-left: 4px solid #2563eb;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body class="bg-[#fafbfc] text-slate-900">
+
+    <nav class="fixed top-0 w-full z-[100] bg-white/80 backdrop-blur-md border-b border-slate-100 no-print">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3 cursor-pointer" onclick="location.reload()">
+                <div class="bg-blue-600 p-2 rounded-xl text-white shadow-lg"><i class="fa-solid fa-brain text-xl"></i></div>
+                <span class="text-2xl font-extrabold tracking-tight">NeuroScreen</span>
+            </div>
+            <div class="flex items-center space-x-6">
+                <select id="langSel" onchange="changeLang()" class="bg-slate-50 text-xs font-black uppercase tracking-widest px-3 py-2 rounded-lg outline-none cursor-pointer border border-slate-200">
+                    <option value="en">English</option>
+                    <option value="hi">हिंदी (Hindi)</option>
+                </select>
+                <button onclick="showAdminLogin()" class="text-sm font-bold text-slate-600 hover:text-blue-600 transition">Clinical Login</button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="pt-20">
+        
+        <section id="home" class="hero-section min-h-screen flex items-center justify-center px-6 no-print">
+            <div class="max-w-4xl text-center">
+                <h1 id="h-title" class="text-6xl md:text-8xl font-extrabold text-white mb-8 tracking-tighter leading-tight">
+                    AI-Driven Early <br><span class="text-blue-400">Dementia Detection</span>
+                </h1>
+                <p id="h-desc" class="text-xl text-slate-300 mb-12 max-w-2xl mx-auto font-medium">
+                    Clinical cognitive assessments powered by neural analysis for instant, reliable risk profiling.
+                </p>
+                <button onclick="startFlow()" id="h-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-12 py-5 rounded-2xl font-bold text-lg shadow-2xl transition-all">
+                    Start New Assessment
+                </button>
+            </div>
+        </section>
+
+        <section id="reg-view" class="hidden py-32 px-6 no-print">
+            <div class="max-w-2xl mx-auto bg-white p-10 rounded-[2.5rem] shadow-xl border border-slate-100">
+                <h2 id="r-title" class="text-3xl font-black mb-8">Patient Registration</h2>
+                <form onsubmit="handleReg(event)" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <input id="p_name" required placeholder="Full Name" class="p-4 bg-slate-50 border-0 rounded-2xl outline-blue-600 font-bold">
+                        <input id="p_email" required type="email" placeholder="Email ID" class="p-4 bg-slate-50 border-0 rounded-2xl">
+                        <input id="p_phone" required type="tel" placeholder="Phone Number" class="p-4 bg-slate-50 border-0 rounded-2xl">
+                        <input id="p_country" required placeholder="Country" class="p-4 bg-slate-50 border-0 rounded-2xl">
+                        <input id="p_age" required type="number" placeholder="Age" class="p-4 bg-slate-50 border-0 rounded-2xl">
+                        <select id="p_gender" class="p-4 bg-slate-50 border-0 rounded-2xl font-bold">
+                            <option>Male</option><option>Female</option><option>Other</option>
+                        </select>
+                    </div>
+                    <select id="p_record" required class="w-full p-4 bg-slate-50 border-0 rounded-2xl font-bold">
+                        <option value="">Patient Record (Past History)</option>
+                        <option value="None">None / Healthy</option>
+                        <option value="Diabetes">Diabetes</option>
+                        <option value="Hypertension">Hypertension</option>
+                        <option value="Alzheimers Family History">Alzheimer's Family History</option>
+                        <option value="Thyroid Disorder">Thyroid Disorder</option>
+                    </select>
+                    <button id="r-btn" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-lg">Initialize Diagnostic</button>
+                </form>
+            </div>
+        </section>
+
+        <section id="test-view" class="hidden py-32 px-6 no-print">
+            <div class="max-w-3xl mx-auto q-card p-12 min-h-[550px] flex flex-col relative overflow-hidden">
+                <div class="flex justify-between items-center mb-16 relative z-10">
+                    <div class="flex flex-col">
+                        <span id="phaseLabel" class="text-blue-600 text-[11px] font-black uppercase tracking-[0.2em] mb-1"></span>
+                        <div class="h-1 w-12 bg-blue-600 rounded-full"></div>
+                    </div>
+                    <span id="qCount" class="bg-slate-100 text-slate-500 px-4 py-2 rounded-2xl font-black text-sm"></span>
+                </div>
+
+                <div class="flex-grow flex flex-col justify-center text-center relative z-10">
+                    <p id="qBox" class="text-4xl md:text-5xl font-extrabold text-slate-800 leading-[1.1] mb-16 tracking-tight"></p>
+                    <div id="inputArea" class="hidden space-y-8">
+                        <div class="relative max-w-lg mx-auto">
+                            <input id="ansIn" autocomplete="off" placeholder="Type answer..." 
+                                   class="w-full p-8 bg-slate-50 border-2 border-transparent rounded-[2.5rem] text-2xl font-bold text-center input-glow outline-none">
+                            <button onclick="speech()" class="absolute right-6 top-1/2 -translate-y-1/2 w-12 h-12 bg-white shadow-lg rounded-full text-blue-600 flex items-center justify-center hover:scale-110 transition">
+                                <i class="fa-solid fa-microphone text-xl"></i>
+                            </button>
+                        </div>
+                        <button onclick="nextStep()" class="bg-blue-600 hover:bg-blue-700 text-white px-14 py-5 rounded-2xl font-black text-lg shadow-xl shadow-blue-200 transition-all">
+                            Submit & Proceed <i class="fa-solid fa-arrow-right ml-2"></i>
+                        </button>
+                    </div>
+                    <div id="memoArea" class="hidden">
+                        <button onclick="showRecallIn()" class="bg-slate-900 text-white px-14 py-6 rounded-[2rem] font-black text-xl shadow-2xl transition-all">
+                            I Have Memorized This <i class="fa-solid fa-check-circle ml-3 text-green-400"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="cooldown-view" class="hidden py-40 text-center no-print">
+            <div class="loader-ring mx-auto mb-8"></div>
+            <h2 id="c-title" class="text-3xl font-black mb-2">Phase Transition</h2>
+            <p class="text-slate-400 font-bold">Please rest. Next phase begins in <span id="timer" class="text-blue-600">10</span> seconds.</p>
+        </section>
+
+        <section id="report-view" class="hidden py-20 px-6">
+            <div class="no-print max-w-4xl mx-auto mb-8 flex justify-between">
+                <button onclick="location.reload()" class="font-bold text-slate-500 hover:text-slate-900"><i class="fa-solid fa-arrow-left mr-2"></i> Exit</button>
+                <button onclick="window.print()" class="bg-blue-600 text-white px-6 py-2 rounded-full font-bold shadow-lg"><i class="fa-solid fa-download mr-2"></i> Download PDF</button>
+            </div>
+            
+            <div class="report-paper">
+                <div class="flex justify-between items-start border-b-2 border-slate-900 pb-8 mb-10">
+                    <div>
+                        <h1 class="text-4xl font-black tracking-tighter">NEUROSCREEN</h1>
+                        <p class="text-xs font-black text-slate-400 uppercase tracking-widest">Clinical Diagnostic Laboratory</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-sm font-bold">Report ID: <span id="repID"></span></p>
+                        <p class="text-sm font-bold">Date: <span id="repDate"></span></p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-12 mb-12">
+                    <div>
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Patient Details</h3>
+                        <p class="text-xl font-black mb-1" id="repName"></p>
+                        <p class="text-sm font-bold text-slate-600" id="repMeta"></p>
+                        <p class="text-xs font-medium text-slate-500" id="repContact"></p>
+                    </div>
+                    <div class="text-right">
+                        <h3 class="text-[10px] font-black text-slate-400 uppercase mb-4 tracking-widest">Diagnostic Result</h3>
+                        <p class="text-5xl font-black text-blue-600 mb-1" id="repScore"></p>
+                        <p class="text-xs font-black uppercase tracking-widest" id="repRisk"></p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-50 p-8 rounded-3xl border border-slate-100 mb-8">
+                    <h3 class="text-sm font-black mb-4 uppercase tracking-widest text-slate-400">Clinical Observations</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed" id="repNote"></p>
+                </div>
+
+                <div class="mb-12">
+                    <h3 class="text-sm font-black mb-4 uppercase tracking-widest text-blue-600">AI Suggested Treatment & Consultation</h3>
+                    <div id="recommendationList" class="grid grid-cols-1 gap-4">
+                        </div>
+                </div>
+
+                <div class="border-t pt-8 text-center">
+                    <p class="text-[9px] text-slate-400 italic">
+                        This report is generated by NeuroScreen AI. Verification by a certified medical professional is mandatory.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section id="admin-view" class="hidden py-32 px-6 no-print">
+            <div id="admin-login" class="max-w-md mx-auto bg-white p-10 rounded-[2rem] shadow-xl">
+                <h2 class="text-2xl font-black mb-8">Staff Login</h2>
+                <input id="au" placeholder="Username" class="w-full p-4 bg-slate-50 border-0 rounded-xl mb-4">
+                <input id="ap" type="password" placeholder="Password" class="w-full p-4 bg-slate-50 border-0 rounded-xl mb-6">
+                <button onclick="doLogin()" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold">Sign In</button>
+            </div>
+            
+            <div id="admin-dash" class="hidden max-w-6xl mx-auto">
+                <div class="flex justify-between items-center mb-10">
+                    <h2 class="text-4xl font-black">Patient Records</h2>
+                    <button onclick="location.reload()" class="bg-red-50 text-red-600 px-4 py-2 rounded-lg font-bold text-xs uppercase">Logout</button>
+                </div>
+                <div class="bg-white rounded-[2.5rem] shadow-2xl overflow-hidden border">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b">
+                            <tr>
+                                <th class="p-6 text-xs font-black text-slate-400 uppercase">Patient & Contact</th>
+                                <th class="p-6 text-xs font-black text-slate-400 uppercase">Score</th>
+                                <th class="p-6 text-xs font-black text-slate-400 uppercase">Risk Level</th>
+                                <th class="p-6 text-xs font-black text-slate-400 uppercase text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTable" class="divide-y divide-slate-50"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const dict = {
+            en: {
+                title: "AI-Driven Early <br><span class='text-blue-400'>Dementia Detection</span>",
+                memoTitle: "MEMORIZE:", numTitle: "NUMBERS:", recall: "Recall Items:",
+                qs: ["Current Year?", "Current Month?", "Today's Day?", "Current City?", "Institution Name?"]
+            },
+            hi: {
+                title: "AI-संचालित <br><span class='text-blue-400'>डिमेंशिया पहचान</span>",
+                memoTitle: "याद रखें:", numTitle: "नंबर:", recall: "याद की गई वस्तुएं:",
+                qs: ["वर्तमान वर्ष?", "वर्तमान महीना?", "आज का दिन?", "वर्तमान शहर?", "संस्था का नाम?"]
+            }
+        };
+
+        // Treatment Database Logic
+        const treatmentDb = {
+            Healthy: [
+                { title: "Cognitive Wellness Plan", info: "Daily puzzles and physical exercise to maintain brain plasticity." },
+                { title: "Annual Neuro-Checkup", info: "Routine screening recommended every 12 months." },
+                { title: "Mindfulness Training", info: "Stress management via meditation apps or local centers." },
+                { title: "Dietary Consultation", info: "Focus on Omega-3 and Mediterranean diet for brain health." },
+                { title: "Community Engagement", info: "Social interaction programs to keep neural pathways active." }
+            ],
+            Risk: [
+                { title: "City Neurology Center", info: "Book a diagnostic MRI/CT scan for detailed neuro-imaging." },
+                { title: "Dr. Elena Smith (Senior Neuro)", info: "Specialist in early-stage cognitive impairment consultancy." },
+                { title: "St. Mary's Memory Clinic", info: "Comprehensive 5-day observation and lifestyle program." },
+                { title: "Memory Support Therapy", info: "Cognitive rehabilitation exercises to strengthen memory." },
+                { title: "Family Support Group", info: "Guidance for caregivers on early intervention strategies." }
+            ]
+        };
+
+        let lang = 'en';
+        let patient = {};
+        let qIdx = 0;
+        let score = 0;
+        let pool = ["Tiger","Bridge","Pencil","Watch","River","Chair","Guitar","Cloud","Table","Bread"];
+        let currentSet = [];
+
+        function switchV(id) {
+            ['home','reg-view','test-view','cooldown-view','report-view','admin-view'].forEach(v => {
+                document.getElementById(v).classList.add('hidden');
+            });
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function startFlow() { switchV('reg-view'); }
+        function showAdminLogin() { switchV('admin-view'); }
+
+        function handleReg(e) {
+            e.preventDefault();
+            patient = {
+                name: document.getElementById('p_name').value,
+                email: document.getElementById('p_email').value,
+                phone: document.getElementById('p_phone').value,
+                country: document.getElementById('p_country').value,
+                age: document.getElementById('p_age').value,
+                gen: document.getElementById('p_gender').value,
+                record: document.getElementById('p_record').value,
+                date: new Date().toLocaleDateString(),
+                id: "NS-" + Math.floor(1000 + Math.random()*9000)
+            };
+            switchV('test-view');
+            loadQ();
+        }
+
+        function loadQ() {
+            const label = document.getElementById('phaseLabel');
+            const qBox = document.getElementById('qBox');
+            const qCount = document.getElementById('qCount');
+            qCount.innerText = `${qIdx + 1} / 15`;
+            document.getElementById('inputArea').classList.add('hidden');
+            document.getElementById('memoArea').classList.add('hidden');
+
+            if(qIdx < 5) {
+                label.innerText = "Phase 1: Orientation";
+                qBox.innerText = dict[lang].qs[qIdx];
+                document.getElementById('inputArea').classList.remove('hidden');
+            } else if (qIdx < 10) {
+                label.innerText = "Phase 2: Word Memory";
+                currentSet = pool.sort(() => Math.random() - 0.5).slice(0, 5);
+                qBox.innerHTML = `<span class='text-blue-600 text-xs font-black block mb-4 tracking-widest'>${dict[lang].memoTitle}</span> ${currentSet.join(", ")}`;
+                document.getElementById('memoArea').classList.remove('hidden');
+            } else {
+                label.innerText = "Phase 3: Numbers";
+                currentSet = Array.from({length: 5}, () => Math.floor(Math.random() * 89 + 10));
+                qBox.innerHTML = `<span class='text-blue-600 text-xs font-black block mb-4 tracking-widest'>${dict[lang].numTitle}</span> ${currentSet.join(", ")}`;
+                document.getElementById('memoArea').classList.remove('hidden');
+            }
+        }
+
+        function showRecallIn() {
+            document.getElementById('memoArea').classList.add('hidden');
+            document.getElementById('qBox').innerText = dict[lang].recall;
+            document.getElementById('inputArea').classList.remove('hidden');
+            document.getElementById('ansIn').focus();
+        }
+
+        function nextStep() {
+            let val = document.getElementById('ansIn').value.trim().toLowerCase();
+            if(val) {
+                if(qIdx >= 5) {
+                    let hits = currentSet.filter(i => val.includes(i.toString().toLowerCase())).length;
+                    if(hits >= 1) score += 7;
+                } else { score += 7; }
+            }
+            qIdx++;
+            document.getElementById('ansIn').value = "";
+            if(qIdx == 15) finishTest();
+            else if(qIdx == 5 || qIdx == 10) runCooldown();
+            else loadQ();
+        }
+
+        function runCooldown() {
+            switchV('cooldown-view');
+            let t = 10;
+            const timer = document.getElementById('timer');
+            let inter = setInterval(() => {
+                t--; timer.innerText = t;
+                if(t <= 0) { clearInterval(inter); switchV('test-view'); loadQ(); }
+            }, 1000);
+        }
+
+        function finishTest() {
+            const finalScore = Math.min(score, 100);
+            const isHighRisk = finalScore < 65;
+            const risk = isHighRisk ? "HIGH RISK DETECTED" : "HEALTHY COGNITIVE RANGE";
+            const note = isHighRisk ? 
+                "Patient shows significant markers for cognitive decline. Immediate clinical evaluation required." : 
+                "Cognitive function within normal limits. Maintain current lifestyle and re-screen annually.";
+            
+            const recs = isHighRisk ? treatmentDb.Risk : treatmentDb.Healthy;
+
+            const entry = { ...patient, score: finalScore, risk, note, recs };
+            let db = JSON.parse(localStorage.getItem('ns_records') || "[]");
+            db.push(entry);
+            localStorage.setItem('ns_records', JSON.stringify(db));
+
+            renderReport(entry);
+            switchV('report-view');
+        }
+
+        function renderReport(r) {
+            document.getElementById('repID').innerText = r.id;
+            document.getElementById('repDate').innerText = r.date;
+            document.getElementById('repName').innerText = r.name;
+            document.getElementById('repMeta').innerText = `Age: ${r.age} | Gen: ${r.gen} | History: ${r.record}`;
+            document.getElementById('repContact').innerText = `Email: ${r.email} | Phone: ${r.phone} | Country: ${r.country}`;
+            document.getElementById('repScore').innerText = r.score;
+            document.getElementById('repRisk').innerText = r.risk;
+            document.getElementById('repRisk').className = r.score < 65 ? "text-red-600 font-black" : "text-green-600 font-black";
+            document.getElementById('repNote').innerText = r.note;
+
+            const list = document.getElementById('recommendationList');
+            list.innerHTML = r.recs.map(item => `
+                <div class="recommendation-pill">
+                    <p class="font-black text-sm text-slate-800">${item.title}</p>
+                    <p class="text-xs text-slate-500">${item.info}</p>
+                </div>
+            `).join('');
+        }
+
+        function doLogin() {
+            if(document.getElementById('au').value == 'admin' && document.getElementById('ap').value == 'admin123') {
+                document.getElementById('admin-login').classList.add('hidden');
+                document.getElementById('admin-dash').classList.remove('hidden');
+                refreshAdminTable();
+            }
+        }
+
+        function refreshAdminTable() {
+            const table = document.getElementById('adminTable');
+            const db = JSON.parse(localStorage.getItem('ns_records') || "[]");
+            table.innerHTML = db.map((r, i) => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-6">
+                        <p class="font-black text-slate-900">${r.name} (${r.age})</p>
+                        <p class="text-[10px] text-slate-400 font-bold">${r.email} | ${r.country}</p>
+                    </td>
+                    <td class="p-6 font-bold text-blue-600">${r.score}</td>
+                    <td class="p-6 font-black uppercase text-[10px] ${r.score < 65 ? 'text-red-500' : 'text-green-500'}">${r.risk}</td>
+                    <td class="p-6 text-right">
+                        <button onclick="viewRecord(${i})" class="text-blue-600 font-black text-xs hover:underline">VIEW FULL REPORT</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function viewRecord(i) {
+            const db = JSON.parse(localStorage.getItem('ns_records'));
+            renderReport(db[i]);
+            switchV('report-view');
+        }
+
+        function speech() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return;
+            const r = new SpeechRecognition();
+            r.start();
+            r.onresult = e => { document.getElementById('ansIn').value = e.results[0][0].transcript; };
+        }
+    </script>
+</body>
+</html>
